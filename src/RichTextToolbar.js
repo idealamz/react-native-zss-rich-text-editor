@@ -89,28 +89,31 @@ export default class RichTextToolbar extends Component {
     return this.props.unselectedButtonStyle ? this.props.unselectedButtonStyle : styles.defaultUnselectedButton;
   }
 
-  _getButtonIcon(action) {
-    if (this.props.iconMap && this.props.iconMap[action]) {
-      return this.props.iconMap[action];
+  _getButtonIcon(action, selected) {
+    if (this.props.iconMap && React.isValidElement(this.props.iconMap[action])) {
+      return this.props.iconMap[action]
+    } else if (this.props.iconMap && this.props.iconMap[action]) {
+      return <Image source={this.props.iconMap[action]} style={{tintColor: selected ? this.props.selectedIconTint : this.props.iconTint}}/>
     } else if (getDefaultIcon()[action]){
-      return getDefaultIcon()[action];
+      const defaultImage = getDefaultIcon()[action];
+      return <Image source={defaultImage} style={{tintColor: selected ? this.props.selectedIconTint : this.props.iconTint}}/>
     } else {
       return undefined;
     }
   }
 
   _defaultRenderAction(action, selected) {
-    const icon = this._getButtonIcon(action);
+    const icon = this._getButtonIcon(action, selected);
     return (
       <TouchableOpacity
           key={action}
           style={[
-            {height: 50, width: 50, justifyContent: 'center'},
+            {height: 50, width: 50, justifyContent: 'center', alignItems: 'center'},
             selected ? this._getButtonSelectedStyle() : this._getButtonUnselectedStyle()
           ]}
           onPress={() => this._onPress(action)}
       >
-        {icon ? <Image source={icon} style={{tintColor: selected ? this.props.selectedIconTint : this.props.iconTint}}/> : null}
+        {icon ? icon : null}
       </TouchableOpacity>
     );
   }
